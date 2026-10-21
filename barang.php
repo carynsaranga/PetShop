@@ -4,7 +4,7 @@ include 'header.php';
 
 // JOIN supaya yang tampil nama satuan bukan angka ID
 $hasil = $koneksi->query("
-    SELECT * FROM barang_v ORDERBY idbarang
+    SELECT * FROM barang_v ORDER BY idbarang
 ");
 ?>
 <div class="d-flex justify-content-between mb-3">
