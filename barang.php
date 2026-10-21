@@ -21,7 +21,7 @@ $hasil = $koneksi->query("
             <th>Satuan</th>
             <th>Harga</th>
             <th>Status</th>
-            <th width="180">Aksi</th>
+            <th width="180">Edit</th>
         </tr>
     </thead>
     <tbody>
