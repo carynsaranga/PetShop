@@ -15,7 +15,7 @@ $hasil = $koneksi->query("SELECT * FROM satuan_v ORDER BY idsatuan");
             <th>ID</th>
             <th>Nama Satuan</th>
             <th>Status</th>
-            <th width="180">Aksi</th>
+            <th width="180">Edit</th>
         </tr>
     </thead>
     <tbody>
