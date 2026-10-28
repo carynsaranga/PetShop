@@ -13,6 +13,7 @@
         <div class="navbar-nav">
             <a class="nav-link" href="satuan.php">Satuan</a>
             <a class="nav-link" href="barang.php">Barang</a>
+            <a class="nav-link" href="vendor.php">Vendor</a>
             <!-- menu tabel lain nanti ditambah di sini -->
         </div>
     </div>
