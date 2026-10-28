@@ -11,6 +11,7 @@ $daftar_badan_hukum = [
     'P' => 'PT',
     'C' => 'CV',
     'U' => 'UD',
+    'L' => 'Lainnya',
 ];
 
 // --- Kalau mode EDIT: ambil data lama ---
