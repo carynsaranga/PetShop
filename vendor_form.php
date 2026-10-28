@@ -3,15 +3,20 @@
 include 'koneksi.php';
 
 $id = $_GET['id'] ?? null;
-$data = ['nama_vendor' => '', 'badan_hukum' => ''];   // isi awal form tambah
+$data = ['nama_vendor' => '', 'badan_hukum' => '', 'status' => ''];   // isi awal form tambah
 $error = '';
 
-// Daftar badan hukum: kode => label
+// Daftar pilihan: kode => label
 $daftar_badan_hukum = [
     'P' => 'PT',
     'C' => 'CV',
     'U' => 'UD',
     'L' => 'Lainnya',
+];
+
+$daftar_status = [
+    'A' => 'Aktif',
+    'N' => 'Nonaktif',
 ];
 
 // --- Kalau mode EDIT: ambil data lama ---
@@ -29,22 +34,30 @@ if ($id) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nama        = trim($_POST['nama_vendor'] ?? '');
     $badan_hukum = trim($_POST['badan_hukum'] ?? '');
+    $status      = trim($_POST['status'] ?? '');
 
-    if ($nama == '' || !array_key_exists($badan_hukum, $daftar_badan_hukum)) {
-        $error = 'Nama vendor dan badan hukum wajib diisi.';
+    // status boleh kosong, tapi kalau diisi harus kode yang valid
+    $status_valid = ($status === '' || array_key_exists($status, $daftar_status));
+
+    if ($nama == '' || !array_key_exists($badan_hukum, $daftar_badan_hukum) || !$status_valid) {
+        $error = 'Nama vendor dan badan hukum wajib diisi dengan benar.';
         $data['nama_vendor'] = $nama;
         $data['badan_hukum'] = $badan_hukum;
+        $data['status']      = $status;
     } else {
+        // status kosong disimpan sebagai NULL
+        $status_db = ($status === '') ? null : $status;
+
         if ($id) {
             // UPDATE
-            $stmt = $koneksi->prepare("UPDATE vendor SET nama_vendor = ?, badan_hukum = ? WHERE idvendor = ?");
-            $stmt->bind_param("ssi", $nama, $badan_hukum, $id);
+            $stmt = $koneksi->prepare("UPDATE vendor SET nama_vendor = ?, badan_hukum = ?, status = ? WHERE idvendor = ?");
+            $stmt->bind_param("sssi", $nama, $badan_hukum, $status_db, $id);
             $stmt->execute();
             pindah('vendor.php', 'sukses', 'Vendor berhasil diubah.');
         } else {
             // CREATE
-            $stmt = $koneksi->prepare("INSERT INTO vendor (nama_vendor, badan_hukum, status) VALUES (?, ?, 'A')");
-            $stmt->bind_param("ss", $nama, $badan_hukum);
+            $stmt = $koneksi->prepare("INSERT INTO vendor (nama_vendor, badan_hukum, status) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $nama, $badan_hukum, $status_db);
             $stmt->execute();
             pindah('vendor.php', 'sukses', 'Vendor berhasil ditambah.');
         }
@@ -71,6 +84,17 @@ include 'header.php';
             <option value="">-- Pilih --</option>
             <?php foreach ($daftar_badan_hukum as $kode => $label): ?>
                 <option value="<?= e($kode) ?>" <?= ($data['badan_hukum'] ?? '') == $kode ? 'selected' : '' ?>>
+                    <?= e($label) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+            <option value="" <?= ($data['status'] ?? '') === '' ? 'selected' : '' ?>>-- Belum diatur --</option>
+            <?php foreach ($daftar_status as $kode => $label): ?>
+                <option value="<?= e($kode) ?>" <?= ($data['status'] ?? '') === $kode ? 'selected' : '' ?>>
                     <?= e($label) ?>
                 </option>
             <?php endforeach; ?>
